@@ -40,12 +40,24 @@
       <label class="field">
         <span>Copies</span>
         <select id="copies">
-          <option value="1">1 &mdash; top-left, rest of sheet left clean</option>
+          <option value="1">1 &mdash; one corner, rest of sheet left clean</option>
           <option value="2">2</option>
           <option value="4" selected>4</option>
           <option value="6">6</option>
         </select>
       </label>
+
+      <div class="field" id="cornerField" hidden>
+        <span>Corner</span>
+        <div class="corners" role="radiogroup" aria-label="Corner of the sheet">
+          <label class="corner" data-c="tl"><input type="radio" name="corner" value="tl" checked><i></i><em>top left</em></label>
+          <label class="corner" data-c="tr"><input type="radio" name="corner" value="tr"><i></i><em>top right</em></label>
+          <label class="corner" data-c="bl"><input type="radio" name="corner" value="bl"><i></i><em>bottom left</em></label>
+          <label class="corner" data-c="br"><input type="radio" name="corner" value="br"><i></i><em>bottom right</em></label>
+        </div>
+        <p class="hint">Pick a corner the sheet still has paper in, if you have already cut labels out of it.</p>
+      </div>
+
       <div class="checks">
         <label class="check"><input type="checkbox" id="marks" checked><span>Corner cut marks</span></label>
         <label class="check"><input type="checkbox" id="folds" checked><span>Fold lines</span></label>

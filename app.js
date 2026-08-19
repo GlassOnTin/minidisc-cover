@@ -29,6 +29,7 @@ function readState() {
     title: $('title').value.trim(),
     blankBand: $('blankBand').checked,
     copies: parseInt($('copies').value, 10),
+    corner: (document.querySelector('input[name="corner"]:checked') || {}).value || 'tl',
     marks: $('marks').checked,
     folds: $('folds').checked,
     ruler: $('ruler').checked,
@@ -41,7 +42,8 @@ function save(s) {
   try {
     localStorage.setItem(STORE, JSON.stringify({
       w: s.w, h: s.h, face: s.face, band: s.band,
-      copies: s.copies, marks: s.marks, folds: s.folds, ruler: s.ruler,
+      copies: s.copies, corner: s.corner,
+      marks: s.marks, folds: s.folds, ruler: s.ruler,
     }));
   } catch { /* private browsing, or storage disabled: not worth reporting */ }
 }
@@ -55,6 +57,10 @@ function restore() {
   if (s.face) $('gf').value = s.face;
   if (typeof s.band === 'number') $('gb').value = s.band;
   if (s.copies) $('copies').value = String(s.copies);
+  if (s.corner) {
+    const r = document.querySelector(`input[name="corner"][value="${s.corner}"]`);
+    if (r) r.checked = true;
+  }
   for (const k of ['marks', 'folds', 'ruler']) {
     if (typeof s[k] === 'boolean') $(k).checked = s[k];
   }
@@ -62,11 +68,24 @@ function restore() {
 
 /* --- geometry ------------------------------------------------------------- */
 
-/** Pack `n` inserts left-to-right, top-to-bottom. A single copy sits in the
- *  top-left corner so the rest of an expensive sheet stays one clean rectangle. */
-function layout(n, w, h) {
-  const margin = n === 1 ? 8 : 10;
+/** Pack `n` inserts left-to-right, top-to-bottom. A single copy goes in whichever
+ *  corner the caller asks for, so the rest of an expensive sheet stays one clean
+ *  rectangle — and so a sheet that already has labels cut out of it can still be
+ *  used from a corner that still has paper. */
+function layout(n, w, h, corner) {
   const gutter = 6;
+
+  if (n === 1) {
+    const margin = 8;
+    const atTop = corner[0] === 't';
+    const x = corner[1] === 'l' ? margin : Math.max(margin, SHEET.w - margin - w);
+    const y = atTop ? margin : Math.max(margin, SHEET.h - margin - h);
+    // Put the ruler in the half the insert is not occupying.
+    const rulerY = atTop ? y + h + 18 : margin + 12;
+    return { spots: [{ x, y }], margin, rulerY };
+  }
+
+  const margin = 10;
   const usableW = SHEET.w - 2 * margin;
   const perRow = Math.max(1, Math.floor((usableW + gutter) / (w + gutter)));
   const spots = [];
@@ -78,7 +97,8 @@ function layout(n, w, h) {
     if (y + h > SHEET.h - margin + 0.01) continue;   // ran off the bottom
     spots.push({ x, y });
   }
-  return { spots, margin, bottom: spots.length ? Math.max(...spots.map(s => s.y)) + h : margin };
+  const bottom = spots.length ? Math.max(...spots.map(s => s.y)) + h : margin;
+  return { spots, margin, rulerY: bottom + 18 };
 }
 
 const mm = (v) => `${v}mm`;
@@ -193,9 +213,17 @@ function drawRuler(x, y, len = 100) {
   return r;
 }
 
+function syncCornerVisibility(copies) {
+  $('cornerField').hidden = copies !== 1;
+  for (const label of document.querySelectorAll('.corner')) {
+    label.classList.toggle('sel', label.querySelector('input').checked);
+  }
+}
+
 function render() {
   const s = readState();
   save(s);
+  syncCornerVisibility(s.copies);
 
   const tuck = s.h - s.face - s.band;
   $('geomNote').textContent = tuck < 0
@@ -206,10 +234,10 @@ function render() {
 
   if (tuck < 0) return;
 
-  const { spots, margin, bottom } = layout(s.copies, s.w, s.h);
+  const { spots, margin, rulerY } = layout(s.copies, s.w, s.h, s.corner);
   for (const p of spots) sheet.append(drawInsert(s, p.x, p.y));
 
-  if (s.ruler && bottom + 20 < SHEET.h) sheet.append(drawRuler(margin, bottom + 18));
+  if (s.ruler && rulerY > 11 && rulerY + 11 < SHEET.h) sheet.append(drawRuler(margin, rulerY));
 
   fitBands(s.band);   // after append: measurement needs the nodes in the document
 
@@ -259,6 +287,9 @@ for (const id of ['title', 'gw', 'gh', 'gf', 'gb']) {
 }
 for (const id of ['copies', 'blankBand', 'marks', 'folds', 'ruler']) {
   $(id).addEventListener('change', () => { render(); fitPreview(); });
+}
+for (const r of document.querySelectorAll('input[name="corner"]')) {
+  r.addEventListener('change', () => { render(); fitPreview(); });
 }
 
 $('file').addEventListener('change', (e) => loadFile(e.target.files[0]));

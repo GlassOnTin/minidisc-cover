@@ -79,6 +79,31 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1p
 
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem .7rem; }
 
+/* corner picker: a little sheet with the chosen corner filled in */
+.corners { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+.corner {
+  display: flex; align-items: center; gap: .45rem;
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: .4rem .5rem; cursor: pointer;
+  font-size: .78rem; color: var(--muted);
+}
+.corner input { position: absolute; opacity: 0; pointer-events: none; }
+.corner i {
+  position: relative; flex: none;
+  width: 13px; height: 18px;
+  border: 1px solid currentColor; border-radius: 2px;
+}
+.corner i::after {
+  content: ""; position: absolute;
+  width: 6px; height: 6px; background: currentColor;
+}
+.corner[data-c="tl"] i::after { left: 1px; top: 1px; }
+.corner[data-c="tr"] i::after { right: 1px; top: 1px; }
+.corner[data-c="bl"] i::after { left: 1px; bottom: 1px; }
+.corner[data-c="br"] i::after { right: 1px; bottom: 1px; }
+.corner.sel { color: var(--accent); border-color: var(--accent); }
+.corner:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+
 .check { display: flex; gap: .5rem; align-items: center; font-size: .88rem; margin-bottom: .35rem; }
 .check input { accent-color: var(--accent); }
 .checks { margin-bottom: .5rem; }

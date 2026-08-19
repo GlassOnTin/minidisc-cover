@@ -19,7 +19,7 @@ The 68 mm figure is worth trusting because it is the disc cartridge's own height
 
 Set the print dialogue to **100% scale**. Do not use "fit to page". Choose A4. Leave the scale check ruler switched on for the first print and measure it. If 0-100 does not measure exactly 100 mm, the dialogue rescaled the page and every insert is wrong by the same factor. There is no way to detect that after the fact without the ruler.
 
-Choosing one copy places it in the top-left corner and leaves the rest of the sheet clean. This matters when the sheet is photo paper.
+Choosing one copy lets you pick which corner it prints in and leaves the rest of the sheet clean. This matters when the sheet is photo paper, and it matters again once you have cut a label out of that sheet and want to use a corner that still has paper in it. The ruler moves to whichever end of the sheet the insert is not using.
 
 ## Running it
 
