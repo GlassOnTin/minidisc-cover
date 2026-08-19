@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MiniDisc Cover Maker</title>
+<meta name="description" content="Print correctly sized, foldable MiniDisc case inserts from your own artwork.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>💽</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="chrome">
+  <header>
+    <h1>MiniDisc Cover Maker</h1>
+    <p class="sub">Foldable case inserts at true size, printed from the browser. Nothing is uploaded anywhere &mdash; the image never leaves this page.</p>
+  </header>
+
+  <div class="controls">
+    <section class="panel">
+      <h2>Artwork</h2>
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="image/*" hidden>
+        <span id="dropLabel">Choose an image, or drop one here</span>
+      </label>
+      <p class="hint">Square artwork works best. Anything else is centre-cropped to the front face, never squashed.</p>
+
+      <label class="field">
+        <span>Title on the spine</span>
+        <input type="text" id="title" placeholder="Artist &mdash; Album" value="">
+      </label>
+      <label class="check">
+        <input type="checkbox" id="blankBand">
+        <span>Leave the spine blank to write by hand</span>
+      </label>
+    </section>
+
+    <section class="panel">
+      <h2>Sheet</h2>
+      <label class="field">
+        <span>Copies</span>
+        <select id="copies">
+          <option value="1">1 &mdash; top-left, rest of sheet left clean</option>
+          <option value="2">2</option>
+          <option value="4" selected>4</option>
+          <option value="6">6</option>
+        </select>
+      </label>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="marks" checked><span>Corner cut marks</span></label>
+        <label class="check"><input type="checkbox" id="folds" checked><span>Fold lines</span></label>
+        <label class="check"><input type="checkbox" id="ruler" checked><span>Scale check ruler</span></label>
+      </div>
+      <p class="hint">The ruler is the only way to catch the print dialogue silently rescaling. Leave it on for a first print, off once you trust the setup.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Case geometry <button type="button" class="link" id="reset">reset</button></h2>
+      <div class="grid">
+        <label class="field"><span>Width</span><input type="number" id="gw" value="73" min="20" max="200" step="0.5"></label>
+        <label class="field"><span>Total height</span><input type="number" id="gh" value="84" min="20" max="200" step="0.5"></label>
+        <label class="field"><span>Front face</span><input type="number" id="gf" value="68" min="10" max="200" step="0.5"></label>
+        <label class="field"><span>Spine band</span><input type="number" id="gb" value="5" min="0" max="40" step="0.5"></label>
+      </div>
+      <p class="hint" id="geomNote"></p>
+    </section>
+
+    <section class="panel actions">
+      <button type="button" id="print" class="primary">Print sheet</button>
+      <p class="hint"><strong>Set the print dialogue to 100% scale</strong>, not &ldquo;fit to page&rdquo;, and A4 paper. Then measure the ruler before cutting.</p>
+    </section>
+  </div>
+
+  <h2 class="previewHeading">Preview</h2>
+</div>
+
+<div class="previewWrap" id="previewWrap">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<div class="chrome">
+  <footer>
+    <p>Front face is 68&nbsp;mm because that is the disc cartridge's own height (72&nbsp;&times;&nbsp;68&nbsp;&times;&nbsp;5&nbsp;mm). The spine band is the case thickness. Measure yours &mdash; published figures for the rest disagree with each other.</p>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
